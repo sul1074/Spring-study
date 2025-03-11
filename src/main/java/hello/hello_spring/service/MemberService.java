@@ -2,6 +2,7 @@ package hello.hello_spring.service;
 
 import hello.hello_spring.domain.Member;
 import hello.hello_spring.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,8 @@ import java.util.Optional;
 
 // 스프링 컨테이너에 등록해야 하는 객체를 참조할 수 있도록 하기 위함. -> 컴퍼넌트 스캔
 // @Service
+
+@Transactional
 public class MemberService {
 
     private final MemberRepository memberRepository;
