@@ -2,8 +2,11 @@ package hello.core.scope;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import jakarta.inject.Provider;
+import lombok.Getter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -14,20 +17,20 @@ public class SingletonWithPrototypeTest1 {
 
     @Test
     void prototypeFind() {
-        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(Prototypebean.class);
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(PrototypeBean.class);
 
-        Prototypebean prototypeBean1 = ac.getBean(Prototypebean.class);
+        PrototypeBean prototypeBean1 = ac.getBean(PrototypeBean.class);
         prototypeBean1.addCount();
         assertThat(prototypeBean1.getCount()).isEqualTo(1);
 
-        Prototypebean prototypeBean2 = ac.getBean(Prototypebean.class);
+        PrototypeBean prototypeBean2 = ac.getBean(PrototypeBean.class);
         prototypeBean2.addCount();
         assertThat(prototypeBean2.getCount()).isEqualTo(1);
     }
 
     @Test
     void singletonClientUsePrototype() {
-        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(ClientBean.class, Prototypebean.class);
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(ClientBean.class, PrototypeBean.class);
 
         ClientBean clientBean1 = ac.getBean(ClientBean.class);
         int count1 = clientBean1.logic();
@@ -35,35 +38,30 @@ public class SingletonWithPrototypeTest1 {
 
         ClientBean clientBean2 = ac.getBean(ClientBean.class);
         int count2 = clientBean2.logic();
-        assertThat(count2).isEqualTo(2);
+        assertThat(count2).isEqualTo(1);
     }
 
     @Scope("singleton")
     static class ClientBean {
-        private final Prototypebean prototypebean; // 생성 시점에 주입돼서, 똑같은 프로토타입 빈이 계속 쓰임. ClientBean은 싱글톤이기 때문
 
         @Autowired
-        public ClientBean(Prototypebean prototypebean) {
-            this.prototypebean = prototypebean;
-        }
+        private Provider<PrototypeBean> prototypeBeanProvider;
 
         public int logic() {
-            prototypebean.addCount();
-            int count = prototypebean.getCount();
+            PrototypeBean prototypeBean = prototypeBeanProvider.get();
+            prototypeBean.addCount();
+            int count = prototypeBean.getCount();
             return count;
         }
     }
 
+    @Getter
     @Scope("prototype")
-    static class Prototypebean {
+    static class PrototypeBean {
         private int count = 0;
 
         public void addCount() {
             ++count;
-        }
-
-        public int getCount() {
-            return count;
         }
 
         @PostConstruct
