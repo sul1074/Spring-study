@@ -1,13 +1,11 @@
 package hello.servlet.domain.member;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class MemberRepositoryTest {
 
@@ -33,7 +31,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    void findALl() {
+    void findAll() {
         // given
         Member member1 = new Member("member1", 20);
         Member member2 = new Member("member1", 30);
@@ -44,7 +42,7 @@ class MemberRepositoryTest {
         memberRepository.save(member3);
 
         // when
-        List<Member> memberList = memberRepository.findALl();
+        List<Member> memberList = memberRepository.findAll();
 
         // then
         assertThat(memberList.size()).isEqualTo(3);

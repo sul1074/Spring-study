@@ -30,7 +30,7 @@ public class MemberRepository {
         return store.get(id);
     }
 
-    public List<Member> findALl() {
+    public List<Member> findAll() {
         return new ArrayList<>(store.values());
     }
 
