@@ -35,16 +35,16 @@ public class MemberService {
 
     @Transactional
     public void update(Long id, String name) {
-        Member member = memberRepository.findOne(id);
+        Member member = memberRepository.findById(id).get();
         member.setName(name);
     }
 
     // 회원 전체 조회
     public List<Member> findMembers() {
-        return memberRepository.findALl();
+        return memberRepository.findAll();
     }
 
     public Member findOne(Long id) {
-        return memberRepository.findOne(id);
+        return memberRepository.findById(id).get();
     }
 }
