@@ -4,6 +4,7 @@ import hello.itemservice.repository.ItemRepository;
 import hello.itemservice.repository.ItemSearchCond;
 import hello.itemservice.repository.ItemUpdateDto;
 import hello.itemservice.repository.memory.MemoryItemRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @Transactional // 테스트에서의 트랜잭션 어노테이션은 테스트 끝나면 롤백해줌. 모든 테스트 코드들이 하나의 트랜잭션 세션을 사용함
 @SpringBootTest
 class ItemRepositoryTest {
@@ -83,6 +85,7 @@ class ItemRepositoryTest {
         Item item2 = new Item("itemA-2", 20000, 20);
         Item item3 = new Item("itemB-1", 30000, 30);
 
+        log.info("repository={}", itemRepository.getClass().getName());
         itemRepository.save(item1);
         itemRepository.save(item2);
         itemRepository.save(item3);
