@@ -1,9 +1,6 @@
 package com.example.stock.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
@@ -17,6 +14,10 @@ public class Stock {
     private Long productId;
 
     private Long quantity;
+
+    // 낙관적 락을 위해 추가
+    @Version
+    private Long version;
 
     public Stock() {
     }

@@ -1,4 +1,4 @@
-package com.example.stock.service;
+package com.example.stock.facade;
 
 import com.example.stock.domain.Stock;
 import com.example.stock.repository.StockRepository;
@@ -12,13 +12,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class StockServiceTest {
+class NamedLockStockFacadeTest {
 
     @Autowired
-    private PessimisticLockStockService stockService;
+    private NamedLockStockFacade stockFacade;
 
     @Autowired
     private StockRepository stockRepository;
@@ -36,18 +37,6 @@ class StockServiceTest {
     }
 
     @Test
-    void decrease() {
-        // given
-
-        // when
-        stockService.decrease(1L, 1L);
-
-        // then
-        Stock stock = stockRepository.findById(1L).orElseThrow();
-        assertThat(stock.getQuantity()).isEqualTo(99L);
-    }
-
-    @Test
     public void concurrentDecrease() throws InterruptedException {
         int threadCount = 100;
 
@@ -57,7 +46,7 @@ class StockServiceTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    stockService.decrease(1L, 1L);
+                    stockFacade.decrease(1L, 1L);
                 } finally {
                     latch.countDown();
                 }
