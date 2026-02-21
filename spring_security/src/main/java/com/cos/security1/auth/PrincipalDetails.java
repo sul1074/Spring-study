@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * 시큐리티가 /login 주소 요청이 오면 낚아채서 로그인을 진행시킴.
