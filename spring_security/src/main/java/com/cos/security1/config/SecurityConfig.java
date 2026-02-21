@@ -34,6 +34,8 @@ public class SecurityConfig {
                 // 폼 로그인 설정
                 .formLogin(form -> form
                         .loginPage("/loginForm") // 권한 없는 페이지 접속 시 튕겨낼 로그인 주소
+                        .loginProcessingUrl("/login") // 로그인 진행 주소. 별도 로그인 페이지 없으면 시큐리티가 낚아채서 대신 로그인을 진행
+                        .defaultSuccessUrl("/") // 로그인 성공 시 이동할 주소
                 );
 
         return http.build();

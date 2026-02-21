@@ -49,7 +49,7 @@ public class IndexController {
     }
 
     @PostMapping("/join")
-    public @ResponseBody String join(@ModelAttribute User user) {
+    public String join(@ModelAttribute User user) {
         log.info(user.toString());
 
         userService.saveUser(user);
