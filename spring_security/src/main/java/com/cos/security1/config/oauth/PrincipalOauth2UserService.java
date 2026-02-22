@@ -1,6 +1,9 @@
 package com.cos.security1.config.oauth;
 
 import com.cos.security1.config.auth.PrincipalDetails;
+import com.cos.security1.config.oauth.provider.FacebookUserInfo;
+import com.cos.security1.config.oauth.provider.GoogleUserInfo;
+import com.cos.security1.config.oauth.provider.OAuth2UserInfo;
 import com.cos.security1.model.User;
 import com.cos.security1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +45,26 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     }
 
     private User registerUser(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
-        String provider = userRequest.getClientRegistration().getClientId(); // google
-        String providerId = oAuth2User.getAttribute("sub");
-        String username = provider + providerId; // google_12421528902251...
+
+        OAuth2UserInfo oAuth2UserInfo = null;
+
+        if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
+            log.info("google login request");
+            oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("facebook")) {
+            log.info("google login request");
+            oAuth2UserInfo = new FacebookUserInfo(oAuth2User.getAttributes());
+
+        } else {
+            log.warn("only support google and facebook!");
+        }
+
+        String provider = oAuth2UserInfo.getProvider(); // google
+        String providerId = oAuth2UserInfo.getProviderId();
+        String username = provider + '_' + providerId; // google_12421528902251...
         String password = bCryptPasswordEncoder.encode("겟인데어"); // 의미 없는데 그냥 넣어는 주기 위해
-        String email = oAuth2User.getAttribute("email");
+        String email = oAuth2UserInfo.getEmail();
         String role = "ROLE_USER";
 
         User user = userRepository.findByUsername(username);
