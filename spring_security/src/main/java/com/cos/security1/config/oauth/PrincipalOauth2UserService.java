@@ -3,6 +3,7 @@ package com.cos.security1.config.oauth;
 import com.cos.security1.config.auth.PrincipalDetails;
 import com.cos.security1.config.oauth.provider.FacebookUserInfo;
 import com.cos.security1.config.oauth.provider.GoogleUserInfo;
+import com.cos.security1.config.oauth.provider.NaverUserInfo;
 import com.cos.security1.config.oauth.provider.OAuth2UserInfo;
 import com.cos.security1.model.User;
 import com.cos.security1.repository.UserRepository;
@@ -16,6 +17,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,7 +27,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    // 구글로부터 받은 userRequest 데이터에 대한 후처리 되는 함수
+    // 구글 등 외부 사이트로부터 받은 userRequest 데이터에 대한 후처리 되는 함수
     // 함수 종료 시 @AuthenticationPrincipal 어노테이션이 만들어짐
     @Transactional // 추가해줌
     @Override
@@ -51,16 +54,17 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
             log.info("google login request");
             oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
-
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("facebook")) {
-            log.info("google login request");
+            log.info("facebook login request");
             oAuth2UserInfo = new FacebookUserInfo(oAuth2User.getAttributes());
-
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
+            log.info("naver login request");
+            oAuth2UserInfo = new NaverUserInfo((Map<String, Object>) oAuth2User.getAttributes().get("response"));
         } else {
             log.warn("only support google and facebook!");
         }
 
-        String provider = oAuth2UserInfo.getProvider(); // google
+        String provider = oAuth2UserInfo.getProvider(); // google, facebook etc..
         String providerId = oAuth2UserInfo.getProviderId();
         String username = provider + '_' + providerId; // google_12421528902251...
         String password = bCryptPasswordEncoder.encode("겟인데어"); // 의미 없는데 그냥 넣어는 주기 위해
@@ -80,6 +84,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .build();
 
             userRepository.save(user);
+        } else {
+            log.info("이미 가입된 회원이 있습니다!");
         }
 
         return user;
