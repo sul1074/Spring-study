@@ -18,7 +18,7 @@ public class CorsConfig {
         config.setAllowCredentials(true);
 
         // 모든 IP에 응답을 허용
-        config.addAllowedOrigin("*");
+        config.addAllowedOriginPattern("*");
 
         // 모든 Header에 응답을 허용
         config.addAllowedHeader("*");
