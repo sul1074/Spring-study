@@ -24,15 +24,14 @@ public class MyFilter3 implements Filter {
             log.info(headerAuth);
 
             // 토큰이 코스일 때만 컨트롤러로 통과시키기
-            if (headerAuth != null && headerAuth.equals("cors")) {
-                chain.doFilter(req, res);
-            } else {
+            if (headerAuth == null || !headerAuth.equals("cors")) {
                 PrintWriter writer = res.getWriter();
                 writer.println("인증 안됨");
                 return;
             }
-        }
+        } 
 
+        // 다음 필터로 통과
         chain.doFilter(req, res);
     }
     /**
