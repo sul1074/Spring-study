@@ -6,6 +6,7 @@ import com.cos.jwt.jwt.JwtAuthenticationFilter;
 import com.cos.jwt.jwt.JwtAuthorizationFilter;
 import com.cos.jwt.jwt.JwtProperties;
 import com.cos.jwt.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.addFilterBefore(new MyFilter3(jwtProperties.getSecret()), BasicAuthenticationFilter.class);
+//        http.addFilterBefore(new MyFilter3(jwtProperties.getSecret()), BasicAuthenticationFilter.class);
 
         /**
          * csrf 해제: 세션을 안쓰니깐 방어 필요 없음
@@ -96,7 +97,22 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .requestMatchers("/api/v1/manager/**").hasAnyRole("MANAGER", "ADMIN")
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                .anyRequest().permitAll() // 다른 요청들은 권한 필요 X
+                .anyRequest().authenticated() // 다른 요청들은 권한 필요 X
+        );
+
+        http.exceptionHandling(exception -> exception
+                // 1. 인증되지 않은 사용자 접근 시 (401 Unauthorized)
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("text/plain;charset=UTF-8");
+                    response.getWriter().write("인증되지 않은 사용자입니다. (401)");
+                })
+                // 2. 권한이 없는 사용자 접근 시 (403 Forbidden)
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("text/plain;charset=UTF-8");
+                    response.getWriter().write("접근 권한이 없습니다. (403)");
+                })
         );
 
         return http.build();

@@ -24,7 +24,7 @@ public class RestApiController {
     }
 
     @PostMapping("/token")
-    public String token() {
+    public String token(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         return "<h1>token</h1>";
     }
 
