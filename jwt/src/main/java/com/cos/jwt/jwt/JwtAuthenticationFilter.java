@@ -9,7 +9,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,11 +25,14 @@ import java.util.Date;
  * 그래서 addFilter로 추가해줘야 함
  */
 @Slf4j
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtProperties jwtProperties;
-    private final AuthenticationManager authenticationManager;
+
+    public JwtAuthenticationFilter(JwtProperties jwtProperties, AuthenticationManager authenticationManager) {
+        super(authenticationManager);
+        this.jwtProperties = jwtProperties;
+    }
 
     // /login 요청을 하면 로그인 시도를 위해 실행되는 함수
     @Override
@@ -51,7 +53,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // PrincipalDetailsService의 loadUserByUsername() 실행됨 -> 즉 토큰을 이용해 로그인 시도해보는 것
             // 제대로 실행되면 로그인이 성공한 것. 이 객체에는 로그인한 유저의 정보가 담기고 스프링 시큐리티 세션에 저장됨
             Authentication authentication =
-                    authenticationManager.authenticate(authenticationToken);
+                    this.getAuthenticationManager().authenticate(authenticationToken);
 
             // 리턴해주는 이유는 권한 관리를 spring security가 대신 해주기 때문에 편하기 때문
             // 굳이 JWT 토큰을 사용하면서 세션을 만들 이유가 X. 권한 때문에 세션에 넣어주는 것
