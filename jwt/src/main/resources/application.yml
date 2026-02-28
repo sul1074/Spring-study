@@ -7,6 +7,9 @@ server:
       enabled: true
       force: true
 
+jwt:
+  secret: ${JWT_SECRET_KEY}
+
 spring:
   application:
     name: jwt

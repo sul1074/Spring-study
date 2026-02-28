@@ -3,7 +3,11 @@ package com.cos.jwt.config;
 import com.cos.jwt.filter.MyFilter1;
 import com.cos.jwt.filter.MyFilter3;
 import com.cos.jwt.jwt.JwtAuthenticationFilter;
+import com.cos.jwt.jwt.JwtAuthorizationFilter;
+import com.cos.jwt.jwt.JwtProperties;
+import com.cos.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -21,11 +25,13 @@ public class SecurityConfig {
 
     private final CorsFilter corsFilter;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final UserRepository userRepository;
+    private final JwtProperties jwtProperties;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.addFilterBefore(new MyFilter3(), BasicAuthenticationFilter.class);
+        http.addFilterBefore(new MyFilter3(jwtProperties.getSecret()), BasicAuthenticationFilter.class);
 
         /**
          * csrf 해제: 세션을 안쓰니깐 방어 필요 없음
@@ -74,8 +80,16 @@ public class SecurityConfig {
         http.httpBasic(basic -> basic.disable());
 
         // jwt 로그인을 위한 필터
-        http.addFilter(new JwtAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()));
-        
+        http.addFilter(new JwtAuthenticationFilter(
+                jwtProperties,
+                authenticationConfiguration.getAuthenticationManager())
+        );
+        http.addFilter(new JwtAuthorizationFilter(
+                jwtProperties,
+                userRepository,
+                authenticationConfiguration.getAuthenticationManager())
+        );
+
         // 권한 처리
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/join").permitAll()

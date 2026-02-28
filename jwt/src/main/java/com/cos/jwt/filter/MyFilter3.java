@@ -3,28 +3,31 @@ package com.cos.jwt.filter;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
 @Slf4j
+@RequiredArgsConstructor
 public class MyFilter3 implements Filter {
+
+    private final String secretKey;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        // 토큰 만들었다고 가정. 토큰: 코스
         if (req.getMethod().equals("POST")) {
             log.info("POST 요청됨");
             log.info("필터3");
             String headerAuth = req.getHeader("Authorization");
             log.info(headerAuth);
 
-            // 토큰이 코스일 때만 컨트롤러로 통과시키기
-            if (headerAuth == null || !headerAuth.equals("cors")) {
+            // 올바른 때만 컨트롤러로 통과시키기
+            if (headerAuth == null || !headerAuth.equals(secretKey)) {
                 PrintWriter writer = res.getWriter();
                 writer.println("인증 안됨");
                 return;
