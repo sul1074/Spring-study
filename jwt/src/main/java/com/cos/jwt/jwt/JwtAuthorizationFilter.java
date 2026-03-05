@@ -54,26 +54,33 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 .getHeader(jwtProperties.getHeaderString())
                 .replace(jwtProperties.getTokenPrefix(), "");
 
-        String username = JWT
-                .require(Algorithm.HMAC512(jwtProperties.getSecret())).build()
-                .verify(token)
-                .getClaim("username")
-                .asString();
+        try {
+            String username = JWT
+                    .require(Algorithm.HMAC512(jwtProperties.getSecret())).build()
+                    .verify(token)
+                    .getClaim("username")
+                    .asString();
 
-        // 서명이 정상적으로 인증이 됨
-        if (username != null) {
-            User user = userRepository.findByUsername(username);
+            // 서명이 정상적으로 인증이 됨
+            if (username != null) {
+                User user = userRepository.findByUsername(username);
 
-            PrincipalDetails principalDetails = new PrincipalDetails(user);
-            
-            // JWT 토큰 서명을 통해 서명이 정상이면 Authentication 객체를 만들어줌
-            Authentication authentication = 
-                    new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+                PrincipalDetails principalDetails = new PrincipalDetails(user);
 
-            // 스프링 시큐리티 세션에 직접 Authentication 객체를 저장해줌
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                // JWT 토큰 서명을 통해 서명이 정상이면 Authentication 객체를 만들어줌
+                Authentication authentication =
+                        new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
 
-            chain.doFilter(request, response);
+                // 스프링 시큐리티 세션에 직접 Authentication 객체를 저장해줌
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception e) {
+            // 💡 토큰 만료, 위조 등의 예외 발생 시 서버가 죽지 않도록 Catch
+            // 로그만 남기고 빈 세션으로 통과시켜, 이후 권한 필터에서 401/403 에러로 처리하게 유도함
+            log.error("JWT 토큰 검증 실패: {}", e.getMessage());
         }
+
+        // 예외가 터지든 정상 검증되든 필터는 무조건 다음으로 넘김
+        chain.doFilter(request, response);
     }
 }
