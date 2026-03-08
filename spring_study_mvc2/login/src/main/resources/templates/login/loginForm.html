@@ -27,6 +27,7 @@
   </div>
 
   <form th:action="@{/login}" th:object="${loginForm}" method="post">
+    <input type="hidden" name="redirectURL" th:value="${param.redirectURL}">
 
     <!-- 글로벌 에러 -->
     <div th:if="${#fields.hasGlobalErrors()}">
