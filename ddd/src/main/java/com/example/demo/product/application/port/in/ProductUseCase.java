@@ -1,8 +1,8 @@
 package com.example.demo.product.application.port.in;
 
 import com.example.demo.product.domain.Product;
-import com.example.demo.product.dto.ProductCreateRequest;
-import com.example.demo.product.dto.ProductUpdateRequest;
+import com.example.demo.product.presentation.dto.ProductCreateRequest;
+import com.example.demo.product.presentation.dto.ProductUpdateRequest;
 
 import java.util.List;
 import java.util.UUID;

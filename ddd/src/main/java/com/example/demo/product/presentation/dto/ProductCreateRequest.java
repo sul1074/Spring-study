@@ -1,13 +1,14 @@
-package com.example.demo.product.dto;
+package com.example.demo.product.presentation.dto;
 
 import java.math.BigDecimal;
 
-public record ProductUpdateRequest(
+public record ProductCreateRequest(
+        String sellerId,
         String name,
         String description,
         BigDecimal price,
         Integer stock,
         String status,
-        String modifiedId
+        String creatorId
 ) {
 }
