@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.demo.product.infrastructure.persistence;
 
-import com.example.demo.domain.Product;
+import com.example.demo.product.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

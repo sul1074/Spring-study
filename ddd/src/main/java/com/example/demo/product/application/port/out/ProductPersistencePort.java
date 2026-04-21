@@ -1,6 +1,6 @@
-package com.example.demo.application.port.out;
+package com.example.demo.product.application.port.out;
 
-import com.example.demo.domain.Product;
+import com.example.demo.product.domain.Product;
 
 import java.util.List;
 import java.util.Optional;

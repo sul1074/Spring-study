@@ -1,8 +1,7 @@
-package com.example.demo.product.adapter.out.persistence;
+package com.example.demo.product.infrastructure.persistence;
 
-import com.example.demo.application.port.out.ProductPersistencePort;
-import com.example.demo.domain.Product;
-import com.example.demo.repository.ProductJpaRepository;
+import com.example.demo.product.application.port.out.ProductPersistencePort;
+import com.example.demo.product.domain.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

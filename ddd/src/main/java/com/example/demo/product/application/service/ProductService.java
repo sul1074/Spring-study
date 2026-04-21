@@ -1,10 +1,11 @@
-package com.example.demo.application.service;
+package com.example.demo.product.application.service;
 
-import com.example.demo.application.port.in.ProductUseCase;
-import com.example.demo.application.port.out.ProductPersistencePort;
-import com.example.demo.domain.Product;
-import com.example.demo.dto.ProductCreateRequest;
-import com.example.demo.dto.ProductUpdateRequest;
+import com.example.demo.common.exception.ProductNotFoundException;
+import com.example.demo.product.application.port.in.ProductUseCase;
+import com.example.demo.product.application.port.out.ProductPersistencePort;
+import com.example.demo.product.domain.Product;
+import com.example.demo.product.dto.ProductCreateRequest;
+import com.example.demo.product.dto.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +72,7 @@ public class ProductService implements ProductUseCase {
 
     private Product getOrElseThrow(UUID productId) {
         return productPersistencePort.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("product not found"));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
     private UUID toUuid(String value, String fieldName) {
