@@ -1,9 +1,10 @@
-package com.example.demo.service;
+package com.example.demo.application.service;
 
+import com.example.demo.application.port.in.ProductUseCase;
+import com.example.demo.application.port.out.ProductPersistencePort;
 import com.example.demo.domain.Product;
 import com.example.demo.dto.ProductCreateRequest;
 import com.example.demo.dto.ProductUpdateRequest;
-import com.example.demo.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +15,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ProductServiceImpl implements ProductService {
+public class ProductService implements ProductUseCase {
 
-    private final ProductRepository productRepository;
+    private final ProductPersistencePort productPersistencePort;
 
     @Override
     @Transactional
@@ -31,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
                 toUuid(request.creatorId(), "creatorId")
         );
 
-        return productRepository.save(product);
+        return productPersistencePort.save(product);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getAll() {
-        return productRepository.findAll();
+        return productPersistencePort.findAll();
     }
 
     @Override
@@ -58,17 +59,18 @@ public class ProductServiceImpl implements ProductService {
                 toUuid(request.modifiedId(), "modifiedId")
         );
 
-        return productRepository.save(product);
+        return productPersistencePort.save(product);
     }
 
     @Override
     @Transactional
     public void delete(UUID productId) {
-        productRepository.deleteById(productId);
+        Product product = getOrElseThrow(productId);
+        productPersistencePort.delete(product);
     }
 
     private Product getOrElseThrow(UUID productId) {
-        return productRepository.findById(productId)
+        return productPersistencePort.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("product not found"));
     }
 

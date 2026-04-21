@@ -1,9 +1,9 @@
-package com.example.demo.controller;
+package com.example.demo.product.adapter.in.web;
 
 import com.example.demo.domain.Product;
 import com.example.demo.dto.ProductCreateRequest;
 import com.example.demo.dto.ProductUpdateRequest;
-import com.example.demo.service.ProductService;
+import com.example.demo.application.port.in.ProductUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,33 +24,33 @@ import java.util.UUID;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductUseCase productUseCase;
 
     @PostMapping
     public ResponseEntity<Product> create(@RequestBody ProductCreateRequest req) {
-        Product product = productService.create(req);
+        Product product = productUseCase.create(req);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @GetMapping("/{productId}")
     public Product getById(@PathVariable UUID productId) {
-        return productService.getById(productId);
+        return productUseCase.getById(productId);
     }
 
     @GetMapping
     public List<Product> getAll() {
-        return productService.getAll();
+        return productUseCase.getAll();
     }
 
     @PutMapping("/{productId}")
     public Product update(@PathVariable UUID productId, @RequestBody ProductUpdateRequest req) {
-        return productService.update(productId, req);
+        return productUseCase.update(productId, req);
     }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> delete(@PathVariable UUID productId) {
-        productService.delete(productId);
+        productUseCase.delete(productId);
         return ResponseEntity.noContent().build();
     }
 }
